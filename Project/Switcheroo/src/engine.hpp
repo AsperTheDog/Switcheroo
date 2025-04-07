@@ -1,6 +1,6 @@
 #pragma once
 #include "filesys/loader/pfs.hpp"
-#include "filesys/loader/key_manager.hpp"
+#include "filesys/key_manager.hpp"
 
 namespace swroo
 {

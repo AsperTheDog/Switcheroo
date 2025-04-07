@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "engine.hpp"
-#include "filesys/loader/key_manager.hpp"
 #include "filesys/loader/pfs.hpp"
 
 i32 main(const i32 argc, char** argv)

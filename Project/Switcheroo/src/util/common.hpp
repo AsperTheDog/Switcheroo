@@ -16,8 +16,8 @@ typedef double f64;
 typedef std::size_t usize;
 typedef std::uint8_t byte;
 
-template<u32 Size>
-using ByteArray = ByteArray<Size>;
+template<usize Size>
+using ByteArray = std::array<u8, Size>;
 
 [[nodiscard]] constexpr u32 MagicFromChars(const char a, const char b, const char c, const char d)
 {

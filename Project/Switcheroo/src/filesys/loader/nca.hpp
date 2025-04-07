@@ -25,8 +25,8 @@ namespace swroo::filesys
             };
 
             struct TableEntry {
-                u32_le media_offset;
-                u32_le media_end_offset;
+                u32_le mediaOffset;
+                u32_le mediaEndOffset;
                 INSERT_PADDING_BYTES(0x8);
             };
 
@@ -47,8 +47,9 @@ namespace swroo::filesys
             std::array<TableEntry, 0x4> entries;
             std::array<ByteArray<0x20>, 0x4> hashTables;
             ByteArray<0x40> keyArea;
+            INSERT_PADDING_BYTES(0xC0);
 
-            MagicType getMagicType() const;
+            [[nodiscard]] MagicType getMagicType() const;
         };
 
     public:

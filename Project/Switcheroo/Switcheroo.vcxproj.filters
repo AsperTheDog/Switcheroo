@@ -24,7 +24,7 @@
     <ClCompile Include="src\filesys\loader\nca.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\filesys\loader\key_manager.cpp">
+    <ClCompile Include="src\filesys\key_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\engine.cpp">
@@ -47,7 +47,7 @@
     <ClInclude Include="src\filesys\loader\nca.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\filesys\loader\key_manager.hpp">
+    <ClInclude Include="src\filesys\key_manager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\engine.hpp">

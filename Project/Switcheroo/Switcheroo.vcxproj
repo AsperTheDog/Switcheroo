@@ -129,14 +129,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\engine.cpp" />
-    <ClCompile Include="src\filesys\loader\key_manager.cpp" />
+    <ClCompile Include="src\filesys\key_manager.cpp" />
     <ClCompile Include="src\filesys\loader\nca.cpp" />
     <ClCompile Include="src\filesys\loader\pfs.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine.hpp" />
-    <ClInclude Include="src\filesys\loader\key_manager.hpp" />
+    <ClInclude Include="src\filesys\key_manager.hpp" />
     <ClInclude Include="src\filesys\loader\nca.hpp" />
     <ClInclude Include="src\filesys\file.hpp" />
     <ClInclude Include="src\filesys\loader\pfs.hpp" />

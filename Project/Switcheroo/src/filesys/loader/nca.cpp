@@ -33,5 +33,4 @@ bool swroo::filesys::NCA::decryptHeader()
     
     Header l_DecryptedHeader;
     ByteArray<32> l_HeaderKey = m_Engine->getKeyManager().getKey(KeyData::K128, KeyData::K256Type::HEADER);
-
 }
