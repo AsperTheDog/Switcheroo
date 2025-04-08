@@ -122,19 +122,19 @@ swroo::filesys::KeyManager::KeyManager(const std::filesystem::path& p_ProdKeys, 
             {
                 const KeyData& l_KeyData = m_KeyNames[l_KeyName];
                 std::cout << "\tKey: " << l_KeyName << " (" << l_KeyData.first << ", " << l_KeyData.second << ") -> " << l_KeyValue << '\n';
-                m_Keys[l_KeyData] = HexStringToByteArray<32>(l_KeyValue);
+                m_Keys[l_KeyData] = HexStringToByteArray<0x20>(l_KeyValue);
             }
             else if (l_KeyName.starts_with("eticket_extended_kek"))
             {
                 std::cout << "\tKey: " << l_KeyName << " -> " << l_KeyValue << '\n';
-                m_ExtendedETicket = HexStringToByteArray<576>(l_KeyValue);
+                m_ExtendedETicket = HexStringToByteArray<0x240>(l_KeyValue);
             }
             else if (l_KeyName.starts_with("encrypted_keyblob_"))
             {
                 u32 l_KeyblobID = std::stoi(l_KeyName.substr(18, 2), nullptr, 16);
 
                 std::cout << "\tKey: " << l_KeyName << " (" << l_KeyblobID << ") -> " << l_KeyValue << '\n';
-                m_EncryptedKeyblobs[l_KeyblobID] = HexStringToByteArray<176>(l_KeyValue);
+                m_EncryptedKeyblobs[l_KeyblobID] = HexStringToByteArray<0xB0>(l_KeyValue);
             }
             else if (l_KeyName.starts_with("keyblob_") && !l_KeyName.starts_with("keyblob_k"))
             {
@@ -145,7 +145,7 @@ swroo::filesys::KeyManager::KeyManager(const std::filesystem::path& p_ProdKeys, 
                 u32 l_KeyblobID = std::stoi(l_KeyNameNumber, nullptr, 16);
 
                 std::cout << "\tKey: " << l_KeyName << " (" << l_KeyblobID << ") -> " << l_KeyValue << '\n';
-                m_Keyblobs[l_KeyblobID] = HexStringToByteArray<144>(l_KeyValue);
+                m_Keyblobs[l_KeyblobID] = HexStringToByteArray<0x90>(l_KeyValue);
             }
             else
             {
@@ -166,7 +166,7 @@ swroo::filesys::KeyManager::KeyManager(const std::filesystem::path& p_ProdKeys, 
 
                     
                     std::cout << "\tKey: " << l_KeyName << " (" << l_KeyData.first << ", " << l_KeyData.second << ") -> " << l_KeyValue << '\n';
-                    m_Keys[l_KeyData] = HexStringToByteArray<32>(l_KeyValue);
+                    m_Keys[l_KeyData] = HexStringToByteArray<0x20>(l_KeyValue);
                 }
             }
         }
@@ -190,8 +190,8 @@ swroo::filesys::KeyManager::KeyManager(const std::filesystem::path& p_ProdKeys, 
             std::erase_if(l_KeyValue, ::isspace);
             std::erase_if(l_KeyName, ::isspace);
 
-            ByteArray<16> l_KeyID = HexStringToByteArray<16>(l_KeyName);
-            ByteArray<32> l_Key = HexStringToByteArray<32>(l_KeyValue);
+            ByteArray<0x10> l_KeyID = HexStringToByteArray<0x10>(l_KeyName);
+            ByteArray<0x20> l_Key = HexStringToByteArray<0x20>(l_KeyValue);
 
             KeyData l_KeyData{
                 .keySize = KeyData::K128,
@@ -206,7 +206,7 @@ swroo::filesys::KeyManager::KeyManager(const std::filesystem::path& p_ProdKeys, 
     }
 }
 
-const ByteArray<32>& swroo::filesys::KeyManager::getKey(const KeyData::KeySize p_Size, const u8 p_KeyType, const u64 p_First, const u64 p_Second) const
+const ByteArray<0x20>& swroo::filesys::KeyManager::getKey(const KeyData::KeySize p_Size, const u8 p_KeyType, const u64 p_First, const u64 p_Second) const
 {
     const KeyData l_KeyData{
         .keySize = p_Size,
@@ -232,7 +232,7 @@ bool swroo::filesys::KeyManager::hasKey(const KeyData::KeySize p_Size, const u8 
     return m_Keys.contains(l_KeyData);
 }
 
-const ByteArray<144>& swroo::filesys::KeyManager::getKeyblob(const u32 p_KeyblobID) const
+const ByteArray<0x90>& swroo::filesys::KeyManager::getKeyblob(const u32 p_KeyblobID) const
 {
     if (m_Keyblobs.contains(p_KeyblobID))
     {
@@ -241,7 +241,7 @@ const ByteArray<144>& swroo::filesys::KeyManager::getKeyblob(const u32 p_Keyblob
     throw std::runtime_error("Keyblob not found: " + std::to_string(p_KeyblobID));
 }
 
-const ByteArray<176>& swroo::filesys::KeyManager::getEncryptedKeyblob(const u32 p_KeyblobID) const
+const ByteArray<0xB0>& swroo::filesys::KeyManager::getEncryptedKeyblob(const u32 p_KeyblobID) const
 {
     if (m_EncryptedKeyblobs.contains(p_KeyblobID))
     {
@@ -250,7 +250,7 @@ const ByteArray<176>& swroo::filesys::KeyManager::getEncryptedKeyblob(const u32 
     throw std::runtime_error("Encrypted keyblob not found: " + std::to_string(p_KeyblobID));
 }
 
-const ByteArray<576>& swroo::filesys::KeyManager::getExtendedETicket() const
+const ByteArray<0x240>& swroo::filesys::KeyManager::getExtendedETicket() const
 {
     return m_ExtendedETicket;
 }

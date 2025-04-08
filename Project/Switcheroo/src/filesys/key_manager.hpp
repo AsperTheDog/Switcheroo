@@ -71,19 +71,19 @@ namespace swroo::filesys
     public:
         explicit KeyManager(const std::filesystem::path& p_ProdKeys, const std::filesystem::path& p_TitleKeys);
 
-        [[nodiscard]] const ByteArray<32>& getKey(KeyData::KeySize p_Size, u8 p_KeyType, u64 p_First = 0, u64 p_Second = 0) const;
+        [[nodiscard]] const ByteArray<0x20>& getKey(KeyData::KeySize p_Size, u8 p_KeyType, u64 p_First = 0, u64 p_Second = 0) const;
         [[nodiscard]] bool hasKey(KeyData::KeySize p_Size, u8 p_KeyType, u64 p_First = 0, u64 p_Second = 0) const;
-        [[nodiscard]] const ByteArray<144>& getKeyblob(u32 p_KeyblobID) const;
-        [[nodiscard]] const ByteArray<176>& getEncryptedKeyblob(u32 p_KeyblobID) const;
-        [[nodiscard]] const ByteArray<576>& getExtendedETicket() const;
+        [[nodiscard]] const ByteArray<0x90>& getKeyblob(u32 p_KeyblobID) const;
+        [[nodiscard]] const ByteArray<0xB0>& getEncryptedKeyblob(u32 p_KeyblobID) const;
+        [[nodiscard]] const ByteArray<0x240>& getExtendedETicket() const;
 
     private:
         static std::unordered_map<std::string, KeyData> m_KeyNames;
 
-        std::unordered_map<KeyData, ByteArray<32>> m_Keys{};
-        std::unordered_map<u32, ByteArray<144>> m_Keyblobs{};
-        std::unordered_map<u32, ByteArray<176>> m_EncryptedKeyblobs{};
+        std::unordered_map<KeyData, ByteArray<0x20>> m_Keys{};
+        std::unordered_map<u32,     ByteArray<0x90>> m_Keyblobs{};
+        std::unordered_map<u32,     ByteArray<0xB0>> m_EncryptedKeyblobs{};
 
-        ByteArray<576> m_ExtendedETicket;
+        ByteArray<0x240> m_ExtendedETicket;
     };
 }

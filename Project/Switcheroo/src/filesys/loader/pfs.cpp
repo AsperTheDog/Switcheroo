@@ -5,9 +5,9 @@
 
 swroo::filesys::PFS::Header::MagicType swroo::filesys::PFS::Header::getMagicType() const
 {
-    if (magic == MagicFromChars('P', 'F', 'S', '0'))
+    if (magic == utils::MagicFromChars('P', 'F', 'S', '0'))
         return MagicType::PFS0;
-    if (magic == MagicFromChars('H', 'F', 'S', '0'))
+    if (magic == utils::MagicFromChars('H', 'F', 'S', '0'))
         return MagicType::HFS0;
     return MagicType::INVALID;
 }

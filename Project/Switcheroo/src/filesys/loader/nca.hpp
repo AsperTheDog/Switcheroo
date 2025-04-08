@@ -27,7 +27,7 @@ namespace swroo::filesys
             struct TableEntry {
                 u32_le mediaOffset;
                 u32_le mediaEndOffset;
-                INSERT_PADDING_BYTES(0x8);
+                ZERO_PADDING(0x8);
             };
 
             ByteArray<0x100> RSASign1;
@@ -39,21 +39,21 @@ namespace swroo::filesys
             u8 keyIndex;
             u64_le size;
             u64_le titleID;
-            INSERT_PADDING_BYTES(0x4);
+            ZERO_PADDING(0x4);
             u32_le sdkVersion;
             u8 KeyGen;
-            INSERT_PADDING_BYTES(0xE);
+            ZERO_PADDING(0xE);
             ByteArray<0x10> rightsID;
             std::array<TableEntry, 0x4> entries;
             std::array<ByteArray<0x20>, 0x4> hashTables;
             ByteArray<0x40> keyArea;
-            INSERT_PADDING_BYTES(0xC0);
+            ZERO_PADDING(0xC0);
 
             [[nodiscard]] MagicType getMagicType() const;
         };
 
     public:
-        explicit NCA(MainFileReader& p_MainFile, u32 p_Offset, u32 p_Size, Engine* p_Engine);
+        explicit NCA(MainFileReader& p_MainFile, usize p_Offset, usize p_Size, Engine* p_Engine);
 
         bool decryptHeader();
 

@@ -23,13 +23,13 @@ namespace swroo::filesys
 
     struct PFSEntry {
         FSEntry fsEntry;
-        INSERT_PADDING_BYTES(0x4);
+        ZERO_PADDING(0x4);
     };
 
     struct HFSEntry {
         FSEntry fsEntry;
         u32_le hashSize;
-        INSERT_PADDING_BYTES(0x8);
+        ZERO_PADDING(0x8);
         ByteArray<0x20> hash;
     };
 #pragma pack(pop)
@@ -48,7 +48,7 @@ namespace swroo::filesys
             u32_le magic;
             u32_le numEntries;
             u32_le strTabSize;
-            INSERT_PADDING_BYTES(0x4);
+            ZERO_PADDING(0x4);
 
             [[nodiscard]] MagicType getMagicType() const;
             [[nodiscard]] const char* getMagicString() const;
