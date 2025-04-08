@@ -1,6 +1,20 @@
 #include "nca.hpp"
 
+#include <iostream>
+
 #include "../../engine.hpp"
+#include "../../util/crypto/aes.hpp"
+
+#include <mbedtls/cipher.h>
+
+static ByteArray<16> getNintendoTweak(u64 p_SectorNumber) {
+    ByteArray<16> l_Tweak{};
+    for (usize i = 15; i <= 15; --i) {
+        l_Tweak[i] = static_cast<u8>(p_SectorNumber & 0xFF);
+        p_SectorNumber >>= 8;
+    }
+    return l_Tweak;
+}
 
 swroo::filesys::NCA::Header::MagicType swroo::filesys::NCA::Header::getMagicType() const
 {
@@ -25,12 +39,23 @@ swroo::filesys::NCA::NCA(MainFileReader& p_MainFile, const u32 p_Offset, const u
 
 bool swroo::filesys::NCA::decryptHeader()
 {
-    const Header::MagicType l_MagicType = m_Header.getMagicType();
+    Header::MagicType l_MagicType = m_Header.getMagicType();
     if (l_MagicType == Header::MagicType::NCA3)
         return true;
     if (l_MagicType != Header::MagicType::INVALID)
         return false;
     
     Header l_DecryptedHeader;
-    ByteArray<32> l_HeaderKey = m_Engine->getKeyManager().getKey(KeyData::K128, KeyData::K256Type::HEADER);
+    const ByteArray<32> l_HeaderKey = m_Engine->getKeyManager().getKey(KeyData::K256, KeyData::K256Type::HEADER);
+    if (!crypto::AES::decryptXTS(reinterpret_cast<const u8*>(&m_Header), reinterpret_cast<u8*>(&l_DecryptedHeader), 
+        sizeof(Header), l_HeaderKey.data(), getNintendoTweak, 0x200))
+    {
+        return false;
+    }
+
+    m_Header = l_DecryptedHeader;
+    l_MagicType = m_Header.getMagicType();
+    if (l_MagicType == Header::MagicType::INVALID)
+        return false;
+    return true;
 }
