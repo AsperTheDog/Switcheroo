@@ -38,9 +38,6 @@
     <ClInclude Include="src\filesys\loader\pfs.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\util\swap.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -1,5 +1,4 @@
 #pragma once
-#include "../../util/swap.hpp"
 #include "../../util/common.hpp"
 
 #include <filesystem>
@@ -16,9 +15,9 @@ namespace swroo::filesys
 {
 #pragma pack(push, 1)
     struct FSEntry {
-        u64_le offset;
-        u64_le size;
-        u32_le strtabOffset;
+        u64 offset;
+        u64 size;
+        u32 strtabOffset;
     };
 
     struct PFSEntry {
@@ -28,7 +27,7 @@ namespace swroo::filesys
 
     struct HFSEntry {
         FSEntry fsEntry;
-        u32_le hashSize;
+        u32 hashSize;
         ZERO_PADDING(0x8);
         ByteArray<0x20> hash;
     };
@@ -45,9 +44,9 @@ namespace swroo::filesys
         struct Header {
             enum MagicType: u8 { PFS0, HFS0, INVALID };
 
-            u32_le magic;
-            u32_le numEntries;
-            u32_le strTabSize;
+            u32 magic;
+            u32 numEntries;
+            u32 strTabSize;
             ZERO_PADDING(0x4);
 
             [[nodiscard]] MagicType getMagicType() const;

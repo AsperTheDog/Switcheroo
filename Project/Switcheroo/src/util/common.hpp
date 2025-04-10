@@ -29,9 +29,24 @@ using ByteArray = std::array<u8, Size>;
 
 namespace swroo::utils
 {
-    [[nodiscard]] constexpr u32 MagicFromChars(const char a, const char b, const char c, const char d)
+    enum DecryptResult : u8
     {
-        return static_cast<u32>(a) | static_cast<u32>(b) << 8 | static_cast<u32>(c) << 16 | static_cast<u32>(d) << 24;
+        SUCCESS = 0,
+        FAILURE = 1,
+        NOT_ENCRYPTED = 2,
+    };
+
+    [[nodiscard]] constexpr u32 MagicFromChars(const char p_First, const char p_Second, const char p_Third, const char p_Fourth)
+    {
+        return static_cast<u32>(p_First) | static_cast<u32>(p_Second) << 8 | static_cast<u32>(p_Third) << 16 | static_cast<u32>(p_Fourth) << 24;
+    }
+
+    [[nodiscard]] inline bool isZero(const u8* p_Data, const usize p_Size)
+    {
+        for (usize i = 0; i < p_Size; ++i)
+            if (p_Data[i] != 0)
+                return false;
+        return true;
     }
 
     class CallListOnDestroy

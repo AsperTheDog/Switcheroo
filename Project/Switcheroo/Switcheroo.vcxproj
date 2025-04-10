@@ -149,7 +149,6 @@
     <ClInclude Include="src\filesys\loader\pfs.hpp" />
     <ClInclude Include="src\util\common.hpp" />
     <ClInclude Include="src\util\crypto\aes.hpp" />
-    <ClInclude Include="src\util\swap.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
