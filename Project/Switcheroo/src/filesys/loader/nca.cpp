@@ -35,11 +35,11 @@ u8 swroo::filesys::NCA::Header::getEntryCount() const
     return l_Count;
 }
 
-swroo::filesys::NCA::NCA(MainFileReader& p_MainFile, const usize p_Offset, const usize p_Size, Engine* p_Engine)
-    : m_SubFile(p_MainFile, p_Offset, p_Size), m_Engine(p_Engine)
+swroo::filesys::NCA::NCA(FileReader* p_MainFile, Engine* p_Engine, const bool p_ShouldOwnFile)
+    : m_File(p_MainFile), m_FileOwned(p_ShouldOwnFile), m_Engine(p_Engine)
 {
     ByteArray<0xC00> l_InitialData;
-    m_SubFile.readBytes(l_InitialData.data(), l_InitialData.size(), 0);
+    m_File->readData(l_InitialData.data(), l_InitialData.size(), 0);
 
     const ByteArray<0x20> l_HeaderKey = m_Engine->getKeyManager().getKey(KeyData::K256, KeyData::K256Type::HEADER);
     crypto::AES l_AES(l_HeaderKey.data());
@@ -51,9 +51,25 @@ swroo::filesys::NCA::NCA(MainFileReader& p_MainFile, const usize p_Offset, const
     if (m_MagicType == Header::MagicType::NCA0)
         throw std::runtime_error("NCA0 is not implemented yet"); // TODO?
 
-    const utils::DecryptResult l_EntriesResult = decryptEntries(l_InitialData, l_AES, l_HeaderResult != utils::DecryptResult::NOT_ENCRYPTED);
+    const utils::DecryptResult l_EntriesResult = decryptFSEntries(l_InitialData, l_AES, l_HeaderResult != utils::DecryptResult::NOT_ENCRYPTED);
     if (l_EntriesResult == utils::DecryptResult::FAILURE)
         throw std::runtime_error("Failed to decrypt NCA entries");
+
+
+}
+
+swroo::filesys::NCA::NCA(NCA&& other) noexcept
+    : m_File(other.m_File), m_FileOwned(other.m_FileOwned), m_Header(other.m_Header), m_MagicType(other.m_MagicType), m_Entries(other.m_Entries), m_Engine(other.m_Engine)
+{
+    other.m_File = nullptr;
+    other.m_FileOwned = false;
+}
+
+swroo::filesys::NCA::~NCA()
+{
+    if (m_FileOwned)
+        delete m_File;
+    m_File = nullptr;
 }
 
 swroo::utils::DecryptResult swroo::filesys::NCA::decryptHeader(const ByteArray<0xC00>& p_RawData, crypto::AES& p_AES)
@@ -73,7 +89,7 @@ swroo::utils::DecryptResult swroo::filesys::NCA::decryptHeader(const ByteArray<0
     return utils::DecryptResult::SUCCESS;
 }
 
-swroo::utils::DecryptResult swroo::filesys::NCA::decryptEntries(const ByteArray<0xC00>& p_RawData, crypto::AES& p_AES, const bool p_IsHeaderEnctrypted)
+swroo::utils::DecryptResult swroo::filesys::NCA::decryptFSEntries(const ByteArray<0xC00>& p_RawData, crypto::AES& p_AES, const bool p_IsHeaderEnctrypted)
 {
     if (!p_IsHeaderEnctrypted)
         return utils::DecryptResult::NOT_ENCRYPTED;
@@ -82,11 +98,9 @@ swroo::utils::DecryptResult swroo::filesys::NCA::decryptEntries(const ByteArray<
     if (m_MagicType == Header::MagicType::NCA3)
     {
         std::array<FSEntry, 4> l_Entries{};
-        if (!p_AES.decryptXTS(l_EntryPtr, reinterpret_cast<u8*>(l_Entries.data()), 
-            sizeof(FSEntry) * m_Entries.size(), getNintendoTweak, 0x200, 2))
-        {
+        if (!p_AES.decryptXTS(l_EntryPtr, reinterpret_cast<u8*>(l_Entries.data()), sizeof(FSEntry) * m_Entries.size(), getNintendoTweak, 0x200, 2))
             return utils::DecryptResult::FAILURE;
-        }
+        
         m_Entries = l_Entries;
     }
     else if (m_MagicType == Header::MagicType::NCA2)
@@ -94,15 +108,35 @@ swroo::utils::DecryptResult swroo::filesys::NCA::decryptEntries(const ByteArray<
         for (FSEntry& l_Entry : m_Entries)
         {
             FSEntry l_DecEntry{};
-            if (!p_AES.decryptXTS(l_EntryPtr, reinterpret_cast<u8*>(&l_DecEntry), 
-                sizeof(FSEntry), getNintendoTweak, 0x200, 0))
-            {
+            if (!p_AES.decryptXTS(l_EntryPtr, reinterpret_cast<u8*>(&l_DecEntry), sizeof(FSEntry), getNintendoTweak, 0x200, 0))
                 return utils::DecryptResult::FAILURE;
-            }
+            
             l_Entry = l_DecEntry;
             l_EntryPtr += sizeof(FSEntry);
         }
     }
 
+    for (u32 i = 0; i < m_Header.getEntryCount(); i++)
+    {
+        if (m_Entries[i].header.version != 2)
+            return utils::DecryptResult::FAILURE;
+    }
+
     return utils::DecryptResult::SUCCESS;
+}
+
+swroo::utils::DecryptResult swroo::filesys::NCA::decryptFSData(bool p_IsHeaderEnctrypted)
+{
+    for (u32 i = 0; i < m_Header.getEntryCount(); i++)
+    {
+        const FSEntry& l_Entry = m_Entries[i];
+        if (l_Entry.header.fsFype == FSEntry::Header::FILE_ROMFS)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }
 }

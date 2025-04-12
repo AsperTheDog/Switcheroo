@@ -35,8 +35,8 @@ namespace swroo::filesys
                 [[nodiscard]] bool isValid() const { return beginOffset > 0; }
             };
 
-            ByteArray<0x100> RSASign1;
-            ByteArray<0x100> RSASign2;
+            ByteArray<0x100> FixedRSASig;
+            ByteArray<0x100> NPDMRSASig;
             u32 magic;
             u8 distType;
             ContentType contentType;
@@ -64,10 +64,27 @@ namespace swroo::filesys
         {
             struct Header
             {
-                PADDING(0x2);
-                u8 partitionType;
-                u8 fsFype;
-                u8 cryptType;
+                enum PatitionType : u8 {
+                    PARITION_PFS0 = 0x0,
+                    PARITION_ROMFS = 0x1,
+                };
+
+                enum FSType : u8 {
+                    FILE_PFS0 = 0x2,
+                    FILE_ROMFS = 0x3,
+                };
+
+                enum CryptoType : u8 {
+                    NONE = 1,
+                    XTS = 2,
+                    CTR = 3,
+                    BKTR = 4,
+                };
+
+                u16 version;
+                PatitionType partitionType;
+                FSType fsFype;
+                CryptoType cryptType;
                 PADDING(0x3);
             };
 
@@ -132,13 +149,20 @@ namespace swroo::filesys
         };
 
     public:
-        explicit NCA(MainFileReader& p_MainFile, usize p_Offset, usize p_Size, Engine* p_Engine);
+        explicit NCA(FileReader* p_MainFile, Engine* p_Engine, bool p_ShouldOwnFile = true);
+        NCA& operator=(const NCA&) = delete;
+        NCA(NCA&& other) noexcept;
 
-        utils::DecryptResult decryptHeader(const ByteArray<3072>& p_RawData, crypto::AES& p_AES);
-        utils::DecryptResult decryptEntries(const ByteArray<3072>& p_RawData, crypto::AES& p_AES, bool p_IsHeaderEnctrypted);
+        ~NCA();
 
     private:
-        SubFileReader m_SubFile;
+        utils::DecryptResult decryptHeader(const ByteArray<3072>& p_RawData, crypto::AES& p_AES);
+        utils::DecryptResult decryptFSEntries(const ByteArray<3072>& p_RawData, crypto::AES& p_AES, bool p_IsHeaderEnctrypted);
+
+        utils::DecryptResult decryptFSData(bool p_IsHeaderEnctrypted);
+
+        FileReader* m_File;
+        bool m_FileOwned = true;
 
         Header m_Header;
         Header::MagicType m_MagicType{ Header::MagicType::INVALID };

@@ -36,10 +36,14 @@ namespace swroo::filesys
     class PFS
     {
     public:
-        explicit PFS(const std::filesystem::path& p_File, Engine* p_Engine);
+        explicit PFS(FileReader* p_File, Engine* p_Engine, bool p_ShouldOwnFile = true);
+        PFS(const PFS&) = delete;
+        PFS(PFS&& other) noexcept;
+        ~PFS();
 
     private:
-        MainFileReader m_File;
+        FileReader* m_File;
+        bool m_FileOwned = true;
 
         struct Header {
             enum MagicType: u8 { PFS0, HFS0, INVALID };
@@ -51,7 +55,7 @@ namespace swroo::filesys
 
             [[nodiscard]] MagicType getMagicType() const;
             [[nodiscard]] const char* getMagicString() const;
-        } m_Header;
+        } m_Header{};
 
         std::vector<NCA> m_NCAs;
 

@@ -7,5 +7,6 @@ swroo::Engine::Engine(const std::filesystem::path& p_ProdKeys, const std::filesy
 
 swroo::filesys::PFS swroo::Engine::loadFPS0(const std::filesystem::path& p_Path)
 {
-    return filesys::PFS(p_Path, this);
+    FileReader* l_MainFile = new MainFileReader(p_Path);
+    return filesys::PFS(l_MainFile, this);
 }
